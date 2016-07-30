@@ -1,13 +1,15 @@
 
 var map;
 
-function initMap() {
-        map = new google.maps.Map(document.getElementById('map'), {
-          center: {lat: -34.397, lng: 150.644},
-          zoom: 8
+var appState = {
+    isDropping: false
+}
 
+var initMap = function () {
+    map = new google.maps.Map(document.getElementById('map'), {
+      center: {lat: -34.397, lng: 150.644},
+      zoom: 8
     });
-
 }
 
 var getSchools = function () {
@@ -64,6 +66,7 @@ var geocodeAddress = function (geocoder, resultsMap, positionString) {
       });
 }
 
+
 $('#mainInput').submit(function (e) {
 
     e.preventDefault();
@@ -89,7 +92,17 @@ $('#mainInput').submit(function (e) {
 
     showSchoolsOnMap(schools);
 
-    navigateTo(formValue + ' Australia')
+    navigateTo(formValue + ' Australia');
+
+})
+
+$('#addSite').on('click', function(e) {
+
+    appState.isDropping = appState.isDropping ? false : true;
+
+    if ( appState.isDropping ) {
+
+    }
 
 
 })
