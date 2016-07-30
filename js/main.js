@@ -5,13 +5,6 @@ var appState = {
     isDropping: false
 }
 
-var initMap = function () {
-    map = new google.maps.Map(document.getElementById('map'), {
-      center: {lat: -34.397, lng: 150.644},
-      zoom: 8
-    });
-}
-
 var getSchools = function () {
     return [
         {
@@ -66,12 +59,33 @@ var geocodeAddress = function (geocoder, resultsMap, positionString) {
       });
 }
 
+var placeMarker = function (latLng, map) {
+    var marker = new google.maps.Marker({
+    position: latLng,
+    map: map
+  });
+}
 
-map.addListener('click', function (e) {
+var addListeners = function (map) {
 
-    console.log(e);
+    map.addListener('click', function (e) {
 
-})
+        placeMarker(e.latLng, map);
+
+    })
+
+}
+
+
+var initMap = function () {
+
+    map = new google.maps.Map(document.getElementById('map'), {
+      center: {lat: -34.397, lng: 150.644},
+      zoom: 8
+    });
+
+    addListeners(map)
+}
 
 
 $('#mainInput').submit(function (e) {
