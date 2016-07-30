@@ -67,6 +67,13 @@ var geocodeAddress = function (geocoder, resultsMap, positionString) {
 }
 
 
+map.addListener('click', function (e) {
+
+    console.log(e);
+
+})
+
+
 $('#mainInput').submit(function (e) {
 
     e.preventDefault();
@@ -77,7 +84,6 @@ $('#mainInput').submit(function (e) {
     //       dataType: 'json',
     //       cache: false,
     //       success: function(response) {
-    //
     //       },
     //       error: function(xhr, status, err) {
     //       }
