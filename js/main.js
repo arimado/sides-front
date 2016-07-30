@@ -10,18 +10,21 @@ var appState = {
 var getSchools = function () {
     return [
         {
+            id: 0,
             school: 'Killara High School',
             capacity: 400,
             lat: -33.860427,
             long: 151.204871,
         },
         {
+            id: 1,
             school: 'Hornsby Girls' ,
             capacity: 400,
             lat: -33.860863,
             long: 151.204832,
         },
         {
+            id: 2,
             school: 'North Sydney Boys' ,
             capacity: 400,
             lat: -33.863407,
@@ -160,7 +163,21 @@ var addEvacSite = function (latLng, map) {
 var mapEvacSites = function (sites) {
     return sites.map(function(site){
         return {
+            id: site.meta.id,
+            lat: site.position.lat(),
+            lng:  site.position.lng(),
+            num_students: site.meta.capacity,
+        }
+    })
+}
 
+var mapSchools = function (schools) {
+    return schools.map(function (school) {
+        return {
+            id: school.id,
+            lat: school.lat,
+            lng: school.long,
+            num_students: school.capacity
         }
     })
 }
@@ -168,8 +185,6 @@ var mapEvacSites = function (sites) {
 var getSchoolsAndSites = function () {
     // get evac on map
     // get schools on map
-    var schools = getSchools();
-    var sites = mapEvacSites(appState.evacSites);
 }
 
 var addMapListeners = function (map) {
@@ -181,21 +196,17 @@ var addMapListeners = function (map) {
 }
 
 var initMap = function () {
-
     map = new google.maps.Map(document.getElementById('map'), {
       center: {lat: -34.397, lng: 150.644},
       zoom: 8
     });
-
-    addMapListeners(map)
+    addMapListeners(map);
 }
 
 
 $('#mainInput').submit(function (e) {
     e.preventDefault();
-
     var formValue = $('#inputContent').val();
-
     // $.ajax({
     //       url: 'test-string',
     //       dataType: 'json',
@@ -210,17 +221,14 @@ $('#mainInput').submit(function (e) {
 
     // jsonData
 
-
     var schools = getSchools();
     showSchoolsOnMap(schools);
     navigateTo(formValue + ' Australia');
-
 })
 
 $('#addSite').on('click', function(e) {
 
     appState.isDropping = appState.isDropping ? false : true;
-
     if ( appState.isDropping ) {
         $('#addSite').val('Dropping');
         $('#siteCapacity').css('display', 'inline-block');
@@ -236,7 +244,12 @@ $('#siteCapacity').on('keyup', function(e) {
 })
 
 $('#run').on('click', function(e) {
-    getSchoolsAndSites()
+    // var schools = getSchools();
+    var sites = mapEvacSites(appState.evacSites);
+    var schools = mapSchools(getSchools());
+
+    debugger;
+
 })
 
 $('#test').on('click', function(e) {
