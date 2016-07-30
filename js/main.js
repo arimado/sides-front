@@ -248,11 +248,27 @@ $('#run').on('click', function(e) {
     var sites = mapEvacSites(appState.evacSites);
     var schools = mapSchools(getSchools());
 
-    debugger;
+    var data = { sources: schools, destinations: sites }
+
+    $.ajax({
+        type: "POST",
+        url: 'http://ec2-54-206-103-17.ap-southeast-2.compute.amazonaws.com/get_optimized_results',
+        data: data,
+        dataType: 'json',
+        success: function (res) {
+            console.log('success')
+            console.log(res)
+        },
+        error: function (err) {
+            console.log('err')
+            console.log(err)
+        }
+    });
+
+    // debugger;
 
 })
 
 $('#test').on('click', function(e) {
     showSitesOnMap(getResults());
-
 })
