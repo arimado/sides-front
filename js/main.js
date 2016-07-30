@@ -219,7 +219,7 @@ $('#mainInput').submit(function (e) {
 
     // on submit draw pointers
 
-    // jsonData
+    // jsonDatas
 
     var schools = getSchools();
     showSchoolsOnMap(schools);
