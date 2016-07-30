@@ -88,8 +88,7 @@ $('#mainInput').submit(function (e) {
 
     showSchoolsOnMap(schools);
 
-
-    navigateTo(formValue)
+    navigateTo(formValue + ' Australia')
 
 
 })
