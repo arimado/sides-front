@@ -53,6 +53,7 @@ var geocodeAddress = function (geocoder, resultsMap, positionString) {
       geocoder.geocode({'address': positionString}, function(results, status) {
         if (status === 'OK') {
           resultsMap.setCenter(results[0].geometry.location);
+          resultsMap.setZoom(14);
           var marker = new google.maps.Marker({
             map: resultsMap,
             position: results[0].geometry.location
