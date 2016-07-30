@@ -65,133 +65,7 @@ var getResults = function () {
    'lat': -33.852728,
    'lng': 151.131206,
    'num_students': 589},
-  'value': 88.0},
- {'dst': {'id': 'Albury West Public School',
-   'lat': -36.07783,
-   'lng': 146.895548,
-   'num_students': 104},
-  'src': {'id': 'Abbotsford Public School',
-   'lat': -33.852728,
-   'lng': 151.131206,
-   'num_students': 589},
-  'value': 0.0},
- {'dst': {'id': 'Timbumburi Public School',
-   'lat': -31.203781,
-   'lng': 150.915629,
-   'num_students': 131},
-  'src': {'id': 'Abbotsford Public School',
-   'lat': -33.852728,
-   'lng': 151.131206,
-   'num_students': 589},
-  'value': 0.0},
- {'dst': {'id': 'Adamstown Public School',
-   'lat': -32.932213,
-   'lng': 151.730971,
-   'num_students': 235},
-  'src': {'id': 'Aberdeen Public School',
-   'lat': -32.166098,
-   'lng': 150.888095,
-   'num_students': 220},
-  'value': 7.0},
- {'dst': {'id': 'Adelong Public School',
-   'lat': -35.312333,
-   'lng': 148.062802,
-   'num_students': 76},
-  'src': {'id': 'Aberdeen Public School',
-   'lat': -32.166098,
-   'lng': 150.888095,
-   'num_students': 220},
-  'value': 0.0},
- {'dst': {'id': 'Albion Park Public School',
-   'lat': -34.570257,
-   'lng': 150.77262,
-   'num_students': 425},
-  'src': {'id': 'Aberdeen Public School',
-   'lat': -32.166098,
-   'lng': 150.888095,
-   'num_students': 220},
-  'value': 0.0},
- {'dst': {'id': 'Albury Public School',
-   'lat': -36.082454,
-   'lng': 146.919253,
-   'num_students': 593},
-  'src': {'id': 'Aberdeen Public School',
-   'lat': -32.166098,
-   'lng': 150.888095,
-   'num_students': 220},
-  'value': 82.0},
- {'dst': {'id': 'Albury West Public School',
-   'lat': -36.07783,
-   'lng': 146.895548,
-   'num_students': 104},
-  'src': {'id': 'Aberdeen Public School',
-   'lat': -32.166098,
-   'lng': 150.888095,
-   'num_students': 220},
-  'value': 0.0},
- {'dst': {'id': 'Timbumburi Public School',
-   'lat': -31.203781,
-   'lng': 150.915629,
-   'num_students': 131},
-  'src': {'id': 'Aberdeen Public School',
-   'lat': -32.166098,
-   'lng': 150.888095,
-   'num_students': 220},
-  'value': 131.0},
- {'dst': {'id': 'Adamstown Public School',
-   'lat': -32.932213,
-   'lng': 151.730971,
-   'num_students': 235},
-  'src': {'id': 'Abermain Public School',
-   'lat': -32.80892,
-   'lng': 151.426499,
-   'num_students': 228},
-  'value': 228.0},
- {'dst': {'id': 'Adelong Public School',
-   'lat': -35.312333,
-   'lng': 148.062802,
-   'num_students': 76},
-  'src': {'id': 'Abermain Public School',
-   'lat': -32.80892,
-   'lng': 151.426499,
-   'num_students': 228},
-  'value': 0.0},
- {'dst': {'id': 'Albion Park Public School',
-   'lat': -34.570257,
-   'lng': 150.77262,
-   'num_students': 425},
-  'src': {'id': 'Abermain Public School',
-   'lat': -32.80892,
-   'lng': 151.426499,
-   'num_students': 228},
-  'value': 0.0},
- {'dst': {'id': 'Albury Public School',
-   'lat': -36.082454,
-   'lng': 146.919253,
-   'num_students': 593},
-  'src': {'id': 'Abermain Public School',
-   'lat': -32.80892,
-   'lng': 151.426499,
-   'num_students': 228},
-  'value': 0.0},
- {'dst': {'id': 'Albury West Public School',
-   'lat': -36.07783,
-   'lng': 146.895548,
-   'num_students': 104},
-  'src': {'id': 'Abermain Public School',
-   'lat': -32.80892,
-   'lng': 151.426499,
-   'num_students': 228},
-  'value': 0.0},
- {'dst': {'id': 'Timbumburi Public School',
-   'lat': -31.203781,
-   'lng': 150.915629,
-   'num_students': 131},
-  'src': {'id': 'Abermain Public School',
-   'lat': -32.80892,
-   'lng': 151.426499,
-   'num_students': 228},
-  'value': 0.0}]
+  'value': 88.0}]
 
   return results;
 }
@@ -206,23 +80,43 @@ var showSchoolsOnMap = function (schools) {
     })
 }
 
+var displayRoute = function (directionsDisplay, directionsService, map, route) {
+    directionsService.route({
+      origin: {lat: route.src.lat, lng: route.src.lng},
+      destination: { lat: route.dst.lat, lng: route.dst.lng },
+      travelMode: 'WALKING'
+    }, function(response, status) {
+      // Route the directions and pass the response to a function to create
+      // markers for each step.
+      if (status === 'OK') {
+        directionsDisplay.setDirections(response);
+      } else {
+        window.alert('Directions request failed due to ' + status);
+      }
+    });
+}
+
 var showSitesOnMap = function (results) {
-    results.forEach(function(result){
 
+    // initialise a directionService
+    var directionsService = new google.maps.DirectionsService;
 
+    results.forEach(function(result) {
 
         var srcMarker = new google.maps.Marker({
              position: { lat: result.src.lat, lng: result.src.lng },
              map: map,
-       });
+        });
+
+        var directionsDisplay = new google.maps.DirectionsRenderer({map: map});
+        displayRoute(directionsDisplay, directionsService, map, result);
+
+       // initialiseRenderer
 
        var dstMarker = new google.maps.Marker({
            position: { lat: result.dst.lat, lng: result.dst.lng },
            map: map,
        })
-
-
-
 
     })
 }
