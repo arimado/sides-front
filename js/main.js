@@ -4,6 +4,7 @@ var map;
 var appState = {
     isDropping: false,
     evacSites: [],
+    currentSiteCapacity: null,
 }
 
 var getSchools = function () {
@@ -99,7 +100,7 @@ var displayRoute = function (directionsDisplay, directionsService, map, route) {
 var showSitesOnMap = function (results) {
 
     // initialise a directionService
-    var directionsService = new google.maps.DirectionsService;
+
 
     results.forEach(function(result) {
 
@@ -107,7 +108,7 @@ var showSitesOnMap = function (results) {
              position: { lat: result.src.lat, lng: result.src.lng },
              map: map,
         });
-
+        var directionsService = new google.maps.DirectionsService;
         var directionsDisplay = new google.maps.DirectionsRenderer({map: map});
         displayRoute(directionsDisplay, directionsService, map, result);
 
@@ -124,7 +125,6 @@ var showSitesOnMap = function (results) {
 var navigateTo = function (positionString) {
     var geocoder = new google.maps.Geocoder();
     geocodeAddress(geocoder, map, positionString);
-
 }
 
 var geocodeAddress = function (geocoder, resultsMap, positionString) {
@@ -149,17 +149,34 @@ var addEvacSite = function (latLng, map) {
     });
     marker.meta = {
         type: 'evac',
-        id: appState.evacSites.length
+        id: appState.evacSites.length,
+        capacity: appState.currentSiteCapacity
     }
     appState.evacSites.push(marker);
+    appState.currentSiteCapacity = null;
+    $('#siteCapacity').val('')
 }
 
-var addListeners = function (map) {
+var mapEvacSites = function (sites) {
+    return sites.map(function(site){
+        return {
+
+        }
+    })
+}
+
+var getSchoolsAndSites = function () {
+    // get evac on map
+    // get schools on map
+    var schools = getSchools();
+    var sites = mapEvacSites(appState.evacSites);
+}
+
+var addMapListeners = function (map) {
     map.addListener('click', function (e) {
         console.log(e.latLng.lat(), e.latLng.lng());
         if (!appState.isDropping) return;
         addEvacSite(e.latLng, map);
-
     })
 }
 
@@ -170,7 +187,7 @@ var initMap = function () {
       zoom: 8
     });
 
-    addListeners(map)
+    addMapListeners(map)
 }
 
 
@@ -195,9 +212,7 @@ $('#mainInput').submit(function (e) {
 
 
     var schools = getSchools();
-
     showSchoolsOnMap(schools);
-
     navigateTo(formValue + ' Australia');
 
 })
@@ -208,16 +223,23 @@ $('#addSite').on('click', function(e) {
 
     if ( appState.isDropping ) {
         $('#addSite').val('Dropping');
-
+        $('#siteCapacity').css('display', 'inline-block');
     } else {
         $('#addSite').val('Add evac site');
+        $('#siteCapacity').css('display', 'none');
     }
 
 })
 
+$('#siteCapacity').on('keyup', function(e) {
+    appState.currentSiteCapacity = e.currentTarget.value;
+})
+
 $('#run').on('click', function(e) {
+    getSchoolsAndSites()
+})
 
+$('#test').on('click', function(e) {
     showSitesOnMap(getResults());
-
 
 })

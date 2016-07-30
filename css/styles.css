@@ -6,3 +6,7 @@
 #map {
     height: 600px;
 }
+
+#siteCapacity {
+    display: none;
+}
