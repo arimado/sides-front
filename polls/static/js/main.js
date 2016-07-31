@@ -7,7 +7,8 @@ var appState = {
     currentSiteCapacity: null,
 }
 
-var getSchools = function () {
+var getSchools = function (postcode, cb) {
+
     return [
         {
             id: 0,
@@ -81,6 +82,25 @@ var showSchoolsOnMap = function (schools) {
          map: map,
          title: 'Hello World!'
        });
+    })
+}
+
+var showSchoolsOnList = function (schools) {
+
+    // reset list
+    $('#list').html('')
+
+    // append data to list
+    schools.forEach(function(school) {
+
+        var $li = $('<li>')
+        var $title = $('<h4>').html(school.school);
+        var $capacity = $('<p>').html('capacity: ' + school.capacity);
+
+        $li.append($title)
+        $li.append($capacity)
+
+        $('#list').append($li);
     })
 }
 
@@ -207,9 +227,9 @@ var initMap = function () {
 $('#mainInput').submit(function (e) {
     e.preventDefault();
     var formValue = $('#inputContent').val();
-	
+
 	console.log(formValue)
-	
+
      // $.ajax({
      //      url: '/search_postcode/?postcode=' + formValue,
      //      dataType: 'json',
@@ -223,18 +243,29 @@ $('#mainInput').submit(function (e) {
      //});
 	 $.get('/search_postcode/?postcode=' + formValue, function(response){
 		 console.log(response);
+
+        //  map schools to objects that play nicely with my code
+
+         var schools = response.json_array.map(function(s, index) {
+            var school = JSON.parse(s);
+             return {
+                 id: index,
+                 school: school.json_school_name,
+                 capacity: school.json_total_enrollments,
+                 lat: parseFloat(school.lat),
+                 long: parseFloat(school.long),
+             }
+         })
+
+         console.log(schools);
+
+         showSchoolsOnMap(schools);
+         showSchoolsOnList(schools)
+         navigateTo(formValue + ' Australia');
+
+
 	 })
-	 
-	
-	
 
-    // on submit draw pointers
-
-    // jsonDatas
-
-    var schools = getSchools();
-    showSchoolsOnMap(schools);
-    navigateTo(formValue + ' Australia');
 })
 
 $('#addSite').on('click', function(e) {

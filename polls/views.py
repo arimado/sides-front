@@ -49,11 +49,11 @@ def search_postcode(request):
 			for each_line in lines:
 				cols = each_line.split("\t")
 
-				school_name_col = cols[2]
-				postcode_col = cols[19]
-				total_enrollments = cols[10]
-				lat = cols[20]
-				long = cols[21]
+				school_name_col = cols[2].rstrip("\r\n")
+				postcode_col = cols[19].rstrip("\r\n")
+				total_enrollments = cols[10].rstrip("\r\n")
+				lat = cols[20].rstrip("\r\n")
+				long = cols[21].rstrip("\r\n")
 
 
 				if(str(postcode) == postcode_col):
