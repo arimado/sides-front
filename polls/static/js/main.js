@@ -351,7 +351,7 @@ $('#run').on('click', function(e) {
 
                 var $li = $('<li>')
                 var $title = $('<h4>').html("Evacuation Site #" + site.meta.id);
-                var $capacity = $('<p>').html('capacity: ' + site.meta.capacity);
+                var $capacity = $('<p class="capacity">').html('capacity: ' + site.meta.capacity);
 
                 var currentRoutes = res.filter(function(route) {
                     return route.dst.id[2] === "" + site.meta.id;
@@ -363,11 +363,11 @@ $('#run').on('click', function(e) {
 
                 currentRoutes.forEach(function(route) {
                     var currentSchools = appState.schools.filter(function(school) {
-                        return route.src.id[2] === "" + school.id
+                        return route.src.id[2] === "" + school.id && route.value > 0
                     })
 
                     currentSchools.forEach(function(school){
-                        var $school = $('<p>').html(school.school)
+                        var $school = $('<p>').html(school.school + ' ' + route.value)
                         $schools.append($school);
                     })
 
@@ -376,7 +376,7 @@ $('#run').on('click', function(e) {
                 $li.append($title)
                 $li.append($capacity)
                 $li.append($schools)
-                
+
                 $list.append($li);
             })
 
