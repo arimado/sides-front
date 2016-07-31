@@ -343,6 +343,43 @@ $('#run').on('click', function(e) {
         success: function (res) {
             console.log('success')
             console.log(res)
+
+            var $list = $('#list')
+            $list.html('');
+
+            appState.evacSites.forEach(function(site){
+
+                var $li = $('<li>')
+                var $title = $('<h4>').html("Evacuation Site #" + site.meta.id);
+                var $capacity = $('<p>').html('capacity: ' + site.meta.capacity);
+
+                var currentRoutes = res.filter(function(route) {
+                    return route.dst.id[2] === "" + site.meta.id;
+                })
+
+
+                var $schools = $('<div>')
+
+
+                currentRoutes.forEach(function(route) {
+                    var currentSchools = appState.schools.filter(function(school) {
+                        return route.src.id[2] === "" + school.id
+                    })
+
+                    currentSchools.forEach(function(school){
+                        var $school = $('<p>').html(school.school)
+                        $schools.append($school);
+                    })
+
+                })
+
+                $li.append($title)
+                $li.append($capacity)
+                $li.append($schools)
+                
+                $list.append($li);
+            })
+
         },
         error: function (err) {
             console.log('err')
