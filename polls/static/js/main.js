@@ -1,9 +1,42 @@
 
+
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+
+
 var map;
 
 var appState = {
     isDropping: false,
     evacSites: [],
+    schools: [],
     currentSiteCapacity: null,
 }
 
@@ -80,7 +113,8 @@ var showSchoolsOnMap = function (schools) {
         var marker = new google.maps.Marker({
          position: { lat: school.lat, lng: school.long },
          map: map,
-         title: 'Hello World!'
+         title: 'Hello World!',
+         icon: '/static/images/school-pin.png'
        });
     })
 }
@@ -168,7 +202,8 @@ var geocodeAddress = function (geocoder, resultsMap, positionString) {
 var addEvacSite = function (latLng, map) {
     var marker = new google.maps.Marker({
         position: latLng,
-        map: map
+        map: map,
+        icon: '/static/images/site-pin.png',
     });
     marker.meta = {
         type: 'evac',
@@ -183,7 +218,7 @@ var addEvacSite = function (latLng, map) {
 var mapEvacSites = function (sites) {
     return sites.map(function(site){
         return {
-            id: site.meta.id,
+            id: "id" + site.meta.id,
             lat: site.position.lat(),
             lng:  site.position.lng(),
             num_students: site.meta.capacity,
@@ -194,7 +229,7 @@ var mapEvacSites = function (sites) {
 var mapSchools = function (schools) {
     return schools.map(function (school) {
         return {
-            id: school.id,
+            id: "id" + school.id,
             lat: school.lat,
             lng: school.long,
             num_students: school.capacity
@@ -224,6 +259,9 @@ var initMap = function () {
 }
 
 
+
+
+
 $('#mainInput').submit(function (e) {
     e.preventDefault();
     var formValue = $('#inputContent').val();
@@ -246,7 +284,7 @@ $('#mainInput').submit(function (e) {
 
         //  map schools to objects that play nicely with my code
 
-         var schools = response.json_array.map(function(s, index) {
+         appState.schools = response.json_array.map(function(s, index) {
             var school = JSON.parse(s);
              return {
                  id: index,
@@ -257,10 +295,8 @@ $('#mainInput').submit(function (e) {
              }
          })
 
-         console.log(schools);
-
-         showSchoolsOnMap(schools);
-         showSchoolsOnList(schools)
+         showSchoolsOnMap(appState.schools);
+         showSchoolsOnList(appState.schools)
          navigateTo(formValue + ' Australia');
 
 
@@ -285,17 +321,24 @@ $('#siteCapacity').on('keyup', function(e) {
     appState.currentSiteCapacity = e.currentTarget.value;
 })
 
+var parseResponse = function(response) {
+    return JSON.parse(response)
+}
+
 $('#run').on('click', function(e) {
     // var schools = getSchools();
     var sites = mapEvacSites(appState.evacSites);
-    var schools = mapSchools(getSchools());
+    var schools = mapSchools(appState.schools);
 
     var data = { sources: schools, destinations: sites }
 
+
+    console.log(data);
+
     $.ajax({
         type: "POST",
-        url: 'http://ec2-54-206-103-17.ap-southeast-2.compute.amazonaws.com/get_optimized_results',
-        data: data,
+        url: "http://ec2-54-206-122-5.ap-southeast-2.compute.amazonaws.com/get_optimal_routes",
+        data: JSON.stringify(data),
         dataType: 'json',
         success: function (res) {
             console.log('success')
@@ -306,6 +349,8 @@ $('#run').on('click', function(e) {
             console.log(err)
         }
     });
+
+    console.log(data);
 
     // debugger;
 
